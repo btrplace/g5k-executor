@@ -1,4 +1,4 @@
-package monitor;
+package monitoring;
 
 /**
  * Created by vkherbac on 17/02/15.

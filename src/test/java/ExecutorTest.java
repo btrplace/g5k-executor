@@ -11,7 +11,6 @@ public class ExecutorTest {
     public void test() throws IOException {
 
         G5kExecutor.main(new String[]{
-                "--repair",
                 "--timeout", "500",
                 "-i", "src/test/resources/4n-4v.json",
                 "-o", "src/test/resources/"

@@ -23,8 +23,8 @@ public class Migrate extends ActionLauncher {
         params = new ArrayList<String>();
 
         params.addAll(Arrays.asList(vmName, srcNodeName, dstNodeName));
-        params.add(" --live --timeout 600 ");
         params.add(String.valueOf(bw));
+        params.add(" --live --timeout 600 ");
         //params.add(" --live --p2p --copy-storage-inc ");
     }
 }
