@@ -1,12 +1,13 @@
-import action.*;
+import action.ActionLauncher;
+import action.Boot;
+import action.Migrate;
+import action.Shutdown;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.plan.ReconfigurationPlanConverter;
-import org.btrplace.plan.DefaultReconfigurationPlanMonitor;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.ReconfigurationPlanMonitor;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.BootNode;
 import org.btrplace.plan.event.MigrateVM;
@@ -14,13 +15,10 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import plan.ActionScheduler;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -57,9 +55,48 @@ public class G5kExecutor {
             return;
         }
 
+        // Retrieve the plan
         ReconfigurationPlan plan = loadPlan(planFileName);
 
-        execute(plan);
+        // Get actions
+        Set<Action> actionsSet = plan.getActions();
+        if (actionsSet.isEmpty()) {
+            System.err.println("The provided plan does not contains any action.");
+            System.exit(1);
+        }
+
+        // From set to list
+        List<Action> actions = new ArrayList<Action>();
+        actions.addAll(actionsSet);
+
+        // Check plan duration
+        int duration = plan.getDuration();
+        if (duration <= 0) {
+            System.err.println("The plan duration is wrong.");
+            System.exit(1);
+        }
+
+        // Sort the actions per start and end times
+        actions.sort((action, action2) -> {
+            int result = action.getStart() - action2.getStart();
+            if (result == 0) {
+                result = action.getEnd() - action2.getEnd();
+            }
+            return result;
+        });
+
+        System.out.println(actions);
+        System.out.flush();
+
+        // Create an ActionLauncher for each Action
+        Map<Action, ActionLauncher> actionsMap = new HashMap<>();
+        for (Action a : actions) {
+            actionsMap.put(a, createLauncher(a));
+        }
+
+        ActionScheduler executor = new ActionScheduler(plan, actionsMap);
+
+        executor.start();
 
         System.exit(0);
     }
@@ -100,97 +137,6 @@ public class G5kExecutor {
         return null;
     }
 
-    private void execute(ReconfigurationPlan plan) {
-
-        // Get actions
-        Set<Action> actionsSet = plan.getActions();
-        if (actionsSet.isEmpty()) {
-            System.err.println("The provided plan does not contains any action.");
-            System.exit(1);
-        }
-
-        // From set to list
-        List<Action> actions = new ArrayList<Action>();
-        actions.addAll(actionsSet);
-
-        // Check plan duration
-        int duration = plan.getDuration();
-        if (duration <= 0) {
-            System.err.println("The plan duration is wrong.");
-            System.exit(1);
-        }
-
-        // Sort the actions per start and end times
-        actions.sort((action, action2) -> {
-            int result = action.getStart() - action2.getStart();
-            if (result == 0) {
-                result = action.getEnd() - action2.getEnd();
-            }
-            return result;
-        });
-
-        // Create an ActionLauncher for each Action
-        Map<Action, ActionLauncher> actionsMap = new HashMap<>();
-        for (Action a : actions) {
-            actionsMap.put(a, createLauncher(a));
-        }
-
-        Map<Future<Integer>, Action> actionStates = new HashMap<>();
-
-        ExecutorService service = Executors.newFixedThreadPool(actions.size());
-
-        // Start actions
-        int nbCommitted = 0;
-        ReconfigurationPlanMonitor rpm = new DefaultReconfigurationPlanMonitor(plan);
-        Set<Action> feasible = new HashSet<>();
-        for (Action a : plan.getActions()) {
-            if (!rpm.isBlocked(a)) {
-                feasible.add(a);
-            }
-        }
-        while (rpm.getNbCommitted() < plan.getSize()) {
-            Set<Action> newFeasible = new HashSet<>();
-            try {
-                service.invokeAll(actionsMap.values());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (!feasible.isEmpty()) {
-                CountDownLatch latch = new CountDownLatch(1);
-                for (Action a : feasible) {
-                    ActionLauncher l = actionsMap.get(a);
-                    l.setCount(latch);
-                    service.submit(l);
-                }
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-            /*
-            for (Iterator<Future<Integer>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
-                Future<Integer> f = it.next();
-
-                CountDownLatch latch = new CountDownLatch(1);
-
-                if (f.isDone()) {
-                    Set<Action> s = rpm.commit(actionStates.get(f));
-                    // TODO: retry ?
-                    if (s == null) {
-                        break;
-                    }
-                    newFeasible.addAll(s);
-                    it.remove();
-                }
-                //service.
-            }*/
-            feasible = newFeasible;
-        }
-    }
-
     private ActionLauncher createLauncher(Action a) {
         if (a instanceof MigrateVM) {
             return new Migrate(((MigrateVM) a).getVM(),
@@ -206,20 +152,6 @@ public class G5kExecutor {
             return new Boot(((BootNode) a).getNode());
         }
         return null;
-    }
-
-    public void action_callback(List<Action> actions) {
-
-        ExecutorService service = Executors.newFixedThreadPool(actions.size());
-        List<ActionLauncher> launchers = new ArrayList<>();
-        for (Action a : actions) {
-            service.submit(createLauncher(a).setCallback(this));
-        }
-        try {
-            service.invokeAll(launchers);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }
 

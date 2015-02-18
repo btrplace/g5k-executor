@@ -1,11 +1,12 @@
 package action;
 
+import plan.ActionScheduler;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by vkherbac on 17/02/15.
@@ -15,7 +16,7 @@ public abstract class ActionLauncher implements Callable<Integer> {
     protected String script;
     protected List<String> params;
     protected Map<String, String> vars;
-    protected CountDownLatch count;
+    protected ActionScheduler.Lock lock;
 
     //public void execute() {
     @Override
@@ -58,7 +59,9 @@ public abstract class ActionLauncher implements Callable<Integer> {
             // Wait for termination
             p.waitFor();
 
-            count.countDown();
+            synchronized (lock) {
+                lock.notify();
+            }
 
         } catch (Exception e) {
             System.err.println("Error while executing script '" + params.get(0) + "'");
@@ -69,7 +72,7 @@ public abstract class ActionLauncher implements Callable<Integer> {
         return p.exitValue();
     }
 
-    public void setCount(CountDownLatch cdl) {
-        count = cdl;
+    public void setSync(ActionScheduler.Lock lock) {
+        this.lock = lock;
     }
 }
