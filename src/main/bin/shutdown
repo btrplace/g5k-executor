@@ -12,8 +12,7 @@ SSH_OPTS=' -o StrictHostKeyChecking=no -o BatchMode=yes -o UserKnownHostsFile=/d
 
 
 function wait_for_halt {
-
-        local NODE="$1"
+    local NODE="$1"
 
 	# Check if the chassis status is off
 	while [ `ipmitool -H $(host $(echo "$NODE" | cut -d'.' -f1)-bmc.$(echo "$NODE" | cut -d'.' -f2,3,4) | awk '{print $4;}') -I lan -U $BMC_USER -P $BMC_MDP chassis status | grep System | grep off | wc -l` -lt 1 ]; do

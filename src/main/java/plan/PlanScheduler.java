@@ -40,6 +40,7 @@ public class PlanScheduler {
             }
         }
 
+        // Loop while there are remaining actions
         while (rpm.getNbCommitted() < actionsMap.size()) {
 
             Set<Action> newFeasible = new HashSet<>();
@@ -59,7 +60,7 @@ public class PlanScheduler {
             // Wait for any termination
             synchronized (lock) {
                 try {
-                    lock.wait();
+                    lock.wait(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

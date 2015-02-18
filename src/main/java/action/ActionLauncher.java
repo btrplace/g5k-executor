@@ -5,7 +5,6 @@ import plan.PlanScheduler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -15,7 +14,7 @@ public abstract class ActionLauncher implements Callable<Integer> {
 
     protected String script;
     protected List<String> params;
-    protected Map<String, String> vars;
+    //protected Map<String, String> vars;
     protected PlanScheduler.Lock lock;
 
     //public void execute() {
@@ -38,13 +37,13 @@ public abstract class ActionLauncher implements Callable<Integer> {
                 pb = new ProcessBuilder(options);
             }
 
-            // Environment vars
+            /* Environment vars
             if (vars != null && !vars.isEmpty()) {
                 Map<String, String> env = pb.environment();
                 for (String name : vars.keySet()) {
                     env.put(name, vars.get(name));
                 }
-            }
+            }*/
 
             pb.directory(new File("src/main/bin/"));
 
