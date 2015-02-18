@@ -85,17 +85,14 @@ public class G5kExecutor {
             return result;
         });
 
-        System.out.println(actions);
-        System.out.flush();
-
         // Create an ActionLauncher for each Action
         Map<Action, ActionLauncher> actionsMap = new HashMap<>();
         for (Action a : actions) {
             actionsMap.put(a, createLauncher(a));
         }
 
+        // Schedule all actions
         PlanScheduler executor = new PlanScheduler(plan, actionsMap);
-
         executor.start();
 
         System.exit(0);
