@@ -1,6 +1,6 @@
 package action;
 
-import plan.ActionScheduler;
+import plan.PlanScheduler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public abstract class ActionLauncher implements Callable<Integer> {
     protected String script;
     protected List<String> params;
     protected Map<String, String> vars;
-    protected ActionScheduler.Lock lock;
+    protected PlanScheduler.Lock lock;
 
     //public void execute() {
     @Override
@@ -72,7 +72,7 @@ public abstract class ActionLauncher implements Callable<Integer> {
         return p.exitValue();
     }
 
-    public void setSync(ActionScheduler.Lock lock) {
+    public void setSync(PlanScheduler.Lock lock) {
         this.lock = lock;
     }
 }

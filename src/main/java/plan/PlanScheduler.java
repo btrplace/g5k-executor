@@ -2,7 +2,6 @@ package plan;
 
 import action.ActionLauncher;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.ReconfigurationPlanMonitor;
 import org.btrplace.plan.event.Action;
 
 import java.util.*;
@@ -13,15 +12,15 @@ import java.util.concurrent.Future;
 /**
  * Created by vkherbac on 18/02/15.
  */
-public class ActionScheduler {
+public class PlanScheduler {
 
     public static final class Lock {}
     private final Object lock = new Lock();
 
     private Map<Action, ActionLauncher> actionsMap;
-    private ReconfigurationPlanMonitor rpm;
+    private PlanMonitor rpm;
 
-    public ActionScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap) {
+    public PlanScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap) {
         this.actionsMap = actionsMap;
         rpm = new PlanMonitor(plan);
     }

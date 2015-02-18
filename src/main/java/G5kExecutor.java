@@ -15,7 +15,7 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import plan.ActionScheduler;
+import plan.PlanScheduler;
 
 import java.io.*;
 import java.util.*;
@@ -94,7 +94,7 @@ public class G5kExecutor {
             actionsMap.put(a, createLauncher(a));
         }
 
-        ActionScheduler executor = new ActionScheduler(plan, actionsMap);
+        PlanScheduler executor = new PlanScheduler(plan, actionsMap);
 
         executor.start();
 
