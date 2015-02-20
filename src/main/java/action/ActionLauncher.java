@@ -4,22 +4,26 @@ import plan.PlanScheduler;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
  * Created by vkherbac on 17/02/15.
  */
-public abstract class ActionLauncher implements Callable<Integer> {
+public abstract class ActionLauncher implements Callable<Date> {
 
+    private final String DEFAULT_SCRIPTS_DIR = "scripts/";
+    
     protected String script;
     protected List<String> params;
     //protected Map<String, String> vars;
     protected PlanScheduler.Lock lock;
+    private String scriptsDir = null;
 
     //public void execute() {
     @Override
-    public Integer call() {
+    public Date call() {
 
         Process p = null;
 
@@ -45,7 +49,7 @@ public abstract class ActionLauncher implements Callable<Integer> {
                 }
             }*/
 
-            pb.directory(new File("src/main/bin/"));
+            pb.directory(new File(scriptsDir==null ? DEFAULT_SCRIPTS_DIR : scriptsDir));
 
             // Redirect script outputs to java process
             //pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
@@ -64,14 +68,20 @@ public abstract class ActionLauncher implements Callable<Integer> {
 
         } catch (Exception e) {
             System.err.println("Error while executing script '" + params.get(0) + "'");
-            //e.printStackTrace();
             System.exit(1);
         }
 
-        return p.exitValue();
+        //return p.exitValue();
+        return new Date();
     }
 
     public void setSync(PlanScheduler.Lock lock) {
         this.lock = lock;
     }
+    
+    public void setScriptsDir(String dir) {
+        scriptsDir = dir;
+    }
+    
+    public abstract String toString();
 }

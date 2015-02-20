@@ -9,8 +9,12 @@ import java.util.ArrayList;
  */
 public class Shutdown extends ActionLauncher {
 
+    private Node node;
+    
     public Shutdown(Node node) {
 
+        this.node = node;
+        
         String nodeName = node.toString();
 
         script = "shutdown.sh";
@@ -21,5 +25,10 @@ public class Shutdown extends ActionLauncher {
         params.add("admin");
         params.add("mdpbmc");
         params.add("/tmp");
+    }
+
+    @Override
+    public String toString() {
+        return "shutdown(node=" + node.toString() + ")" ;
     }
 }

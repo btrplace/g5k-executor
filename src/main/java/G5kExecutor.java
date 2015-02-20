@@ -27,12 +27,12 @@ import java.util.zip.GZIPInputStream;
 public class G5kExecutor {
 
     // Define options list
-    @Option(name = "-t", aliases = "--timeout", usage = "Set a timeout (in sec)")
-    private int timeout = 0; //5min by default
-    @Option(required = true, name = "-i", aliases = "--input-json", usage = "the json reconfiguration plan to read (can be a .gz)")
+    @Option(name = "-s", aliases = "--scripts-dir", usage = "Scripts location relative directory")
+    private String scriptsDir;
+    @Option(required = true, name = "-i", aliases = "--input-json", usage = "The json reconfiguration plan to read (can be a .gz)")
     private String planFileName;
-    @Option(required = true, name = "-o", aliases = "--output-dir", usage = "Output to this directory")
-    private String dst;
+    @Option(required = true, name = "-o", aliases = "--output-file", usage = "Print actions durations to this file")
+    private String outputFile;
 
     public static void main(String[] args) throws IOException {
         new G5kExecutor().parseArgs(args);
@@ -45,14 +45,12 @@ public class G5kExecutor {
         cmdParser.setUsageWidth(80);
         try {
             cmdParser.parseArgument(args);
-            if (timeout < 0)
-                throw new CmdLineException("Timeout can not be < 0 !");
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println("g5kExecutor [-t n_sec] -i file_name -o dir_name");
+            System.err.println("g5kExecutor [-d scripts_dir] -i json_file -o output_file");
             cmdParser.printUsage(System.err);
             System.err.println();
-            return;
+            System.exit(1);
         }
 
         // Retrieve the plan
@@ -92,9 +90,17 @@ public class G5kExecutor {
         }
 
         // Schedule all actions
-        PlanScheduler executor = new PlanScheduler(plan, actionsMap);
-        executor.start();
+        PlanScheduler executor = new PlanScheduler(plan, actionsMap, scriptsDir);
+        Map<Action, PlanScheduler.actionDuration> durations = executor.start();
 
+        if (durations == null || durations.isEmpty()) {
+            System.err.println("Unable to retrieve effective durations");
+            System.exit(1);
+        }
+
+        saveAsCSV(durations);
+
+        // Exit
         System.exit(0);
     }
 
@@ -132,6 +138,54 @@ public class G5kExecutor {
         }
 
         return null;
+    }
+
+    private void saveAsCSV(Map<Action, PlanScheduler.actionDuration> durations) {
+
+        List<Action> actions = new ArrayList<>(durations.keySet());
+
+        char SEPARATOR = ';';
+
+        BufferedWriter writer = null;
+
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "utf-8"));
+
+            // Sort the actions per start and end times
+            actions.sort(new Comparator<Action>() {
+                @Override
+                public int compare(Action action, Action action2) {
+                    long result = durations.get(action).getStart().getTime() - durations.get(action2).getStart().getTime();
+                    if (result == 0) {
+                        result = durations.get(action).getEnd().getTime() - durations.get(action2).getEnd().getTime();
+                    }
+                    return (int) result;
+                }
+            });
+
+            // Write header
+            writer.write("ACTION" + SEPARATOR + "START" + SEPARATOR + "END");
+
+            // Write actions and timestamps
+            for (Action a : actions) {
+                writer.newLine();
+                writer.append(a.toString()).append(SEPARATOR)
+                      .append(String.valueOf(durations.get(a).getStart().getTime()/1000)).append(SEPARATOR)
+                      .append(String.valueOf(durations.get(a).getEnd().getTime()/1000));
+            }
+
+            writer.flush();
+        } catch (IOException ex) {
+            System.err.println("IO error occurs when trying to write '" + outputFile + ": " + ex.toString());
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    System.err.println("Unable to close the file '" + outputFile + ": " + e.toString());
+                }
+            }
+        }
     }
 
     private ActionLauncher createLauncher(Action a) {

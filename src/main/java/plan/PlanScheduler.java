@@ -5,6 +5,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -16,18 +17,25 @@ public class PlanScheduler {
 
     public static final class Lock {}
     private final Object lock = new Lock();
-
+    
     private Map<Action, ActionLauncher> actionsMap;
     private PlanMonitor rpm;
+    private String scriptsDir = null;
 
+    public PlanScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap, String scriptsDir) {
+        this(plan, actionsMap);
+        this.scriptsDir = scriptsDir;
+    }
+    
     public PlanScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap) {
         this.actionsMap = actionsMap;
         rpm = new PlanMonitor(plan);
     }
 
-    public void start() {
+    public Map<Action, actionDuration> start() {
 
-        Map<Future<Integer>, Action> actionStates = new HashMap<>();
+        Map<Future<Date>, Action> actionStates = new HashMap<>();
+        Map<Action, actionDuration> durations = new HashMap<>();
 
         // Start actions
         int nbCommitted = 0;
@@ -52,7 +60,9 @@ public class PlanScheduler {
                 for (Action a : feasible) {
                     ActionLauncher l = actionsMap.get(a);
                     l.setSync((Lock) lock);
+                    if (scriptsDir!=null) l.setScriptsDir(scriptsDir);
                     actionStates.put(service.submit(l), a);
+                    durations.put(a, new actionDuration(new Date(), null));
                 }
                 service.shutdown();
             }
@@ -62,26 +72,50 @@ public class PlanScheduler {
                 try {
                     lock.wait(500);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    System.err.println("Interrupted Exception on main thread");
+                    System.exit(1);
                 }
             }
 
             // Check for finished actions and prepare the new unlocked actions
-            for (Iterator<Future<Integer>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
-                Future<Integer> f = it.next();
+            for (Iterator<Future<Date>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
+                Future<Date> f = it.next();
 
                 if (f.isDone()) {
+                    // Get the returned Date
+                    try {
+                        durations.get(actionStates.get(f)).setEnd(f.get());
+                    } catch (InterruptedException e) {
+                        System.err.println("Interrupted Exception during action: " +
+                                actionsMap.get((actionStates.get(f))).toString());
+                        System.exit(1);
+                    } catch (ExecutionException e) {
+                        System.err.println("Execution Exception for action: " +
+                                actionsMap.get((actionStates.get(f))).toString());
+                        System.exit(1);
+                    }
                     Set<Action> s = rpm.commit(actionStates.get(f));
-                    // TODO: retry ?
                     if (s == null) {
-                        break;
+                        System.err.println("Unable to commit action: " +
+                                actionsMap.get((actionStates.get(f))).toString());
+                        System.exit(1);
                     }
                     newFeasible.addAll(s);
                     it.remove();
                 }
             }
-
             feasible = newFeasible;
         }
+        
+        return durations;
+    }
+    
+    public class actionDuration {
+        Date start, end;
+        public actionDuration(Date start, Date end) { this.start = start; this.end = end;  }
+        public void setStart(Date start) { this.start = start; }
+        public void setEnd(Date end) { this.end = end; }
+        public Date getStart() { return start; }
+        public Date getEnd() { return end; }
     }
 }
