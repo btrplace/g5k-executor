@@ -45,7 +45,7 @@ public class PlanMonitor implements ReconfigurationPlanMonitor {
             curModel = plan.getOrigin().clone();
             pre.clear();
             nbCommitted = 0;
-            for (Action a : plan) {
+            for (Action a : plan.getActions()) {
                 Set<Action> deps = plan.getDirectDependencies(a);
                 deps.addAll(addMigrationsDependencies(a));
                 if (deps.isEmpty()) {
