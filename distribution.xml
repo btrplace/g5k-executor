@@ -39,16 +39,6 @@
             <fileMode>0755</fileMode>
         </file>
         <file>
-            <source>src/test/resources/micro_inter-node.json</source>
-            <outputDirectory>/</outputDirectory>
-            <fileMode>0755</fileMode>
-        </file>
-        <file>
-            <source>src/test/resources/micro_intra-node.json</source>
-            <outputDirectory>/</outputDirectory>
-            <fileMode>0755</fileMode>
-        </file>
-        <file>
             <source>src/main/bin/scripts/migrate.sh</source>
             <outputDirectory>/scripts/</outputDirectory>
             <fileMode>0755</fileMode>
@@ -60,6 +50,21 @@
         </file>
         <file>
             <source>src/main/bin/scripts/shutdown.sh</source>
+            <outputDirectory>/scripts/</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>src/main/bin/scripts/translate</source>
+            <outputDirectory>/scripts/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>src/main/bin/scripts/getDirtyRate.sh</source>
+            <outputDirectory>/scripts/</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>src/main/bin/scripts/getMemUsed.sh</source>
             <outputDirectory>/scripts/</outputDirectory>
             <fileMode>0755</fileMode>
         </file>
