@@ -39,18 +39,28 @@
             <fileMode>0755</fileMode>
         </file>
         <file>
-            <source>src/main/bin/migrate.sh</source>
+            <source>src/test/resources/micro_inter-node.json</source>
             <outputDirectory>/</outputDirectory>
             <fileMode>0755</fileMode>
         </file>
         <file>
-            <source>src/main/bin/boot.sh</source>
+            <source>src/test/resources/micro_intra-node.json</source>
             <outputDirectory>/</outputDirectory>
             <fileMode>0755</fileMode>
         </file>
         <file>
-            <source>src/main/bin/shutdown.sh</source>
-            <outputDirectory>/</outputDirectory>
+            <source>src/main/bin/scripts/migrate.sh</source>
+            <outputDirectory>/scripts/</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>src/main/bin/scripts/boot.sh</source>
+            <outputDirectory>/scripts/</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>src/main/bin/scripts/shutdown.sh</source>
+            <outputDirectory>/scripts/</outputDirectory>
             <fileMode>0755</fileMode>
         </file>
     </files>
