@@ -1,4 +1,4 @@
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public class ExecutorTest {
     public void intraNodeTest() throws IOException {
 
         G5kExecutor.main(new String[]{
-                "-s", "src/main/bin/scripts/",
+                "-s", "src/main/bin/scripts_test/",
                 "-i", "src/test/resources/micro_intra-node.json",
                 "-o", "src/test/resources/micro_intra-node.csv"
         });
@@ -23,7 +23,7 @@ public class ExecutorTest {
     public void interNodeTest() throws IOException {
 
         G5kExecutor.main(new String[]{
-                "-s", "src/main/bin/scripts/",
+                "-s", "src/main/bin/scripts_test/",
                 "-i", "src/test/resources/micro_inter-node.json",
                 "-o", "src/test/resources/micro_inter-node.csv"
         });

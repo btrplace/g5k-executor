@@ -5,6 +5,9 @@ VM_NAME="$2"
 FREQUENCY="$3"
 DURATION="$4"
 
+# Translate name to real
+HOST=`cat translate | grep $HOST | awk '{print $2;}'`
+
 SSH_USER=
 SSH_OPTS=' -o StrictHostKeyChecking=no -o BatchMode=yes -o UserKnownHostsFile=/dev/null -o LogLevel=quiet '
 

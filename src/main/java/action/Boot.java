@@ -29,6 +29,6 @@ public class Boot extends ActionLauncher {
 
     @Override
     public String toString() {
-        return "boot(node=" + node.toString() + ")" ;
+        return "boot.sh(node=" + node.toString() + ")" ;
     }
 }

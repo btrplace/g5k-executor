@@ -31,7 +31,7 @@ public class G5kExecutor {
     private String scriptsDir;
     @Option(required = true, name = "-i", aliases = "--input-json", usage = "The json reconfiguration plan to read (can be a .gz)")
     private String planFileName;
-    @Option(required = true, name = "-o", aliases = "--output-file", usage = "Print actions durations to this file")
+    @Option(required = true, name = "-o", aliases = "--output-csv", usage = "Print actions durations to this file")
     private String outputFile;
 
     public static void main(String[] args) throws IOException {
@@ -47,7 +47,7 @@ public class G5kExecutor {
             cmdParser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println("g5kExecutor [-d scripts_dir] -i json_file -o output_file");
+            System.err.println("g5kExecutor [-s scripts_dir] -i json_file -o output_file");
             cmdParser.printUsage(System.err);
             System.err.println();
             System.exit(1);

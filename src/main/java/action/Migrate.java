@@ -38,7 +38,7 @@ public class Migrate extends ActionLauncher {
 
     @Override
     public String toString() {
-        return "migrate(vm='" + vm.toString() + "'; from='" + srcNode.toString() + "'; to='" + dstNode.toString() +
+        return "migrate.sh(vm='" + vm.toString() + "'; from='" + srcNode.toString() + "'; to='" + dstNode.toString() +
                 "'; speed='" + String.valueOf(bw) + " mb/s')";
     }
 }
