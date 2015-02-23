@@ -21,7 +21,7 @@ VM_BASE_IMG_DIR="/data/nfs/base_img"
 VM_BACKING_IMG_DIR="/data/nfs/backing"
 
 START=$(date +%s)
-echo -e "Start:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH mb/s"
+echo -e "Start:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH Mbps"
 
 # Convert Mb/s to MiB/s and round
 BANDWIDTH=`bc <<< "$BANDWIDTH/8.388608"`
@@ -73,4 +73,4 @@ else
 fi
 
 END=$(date +%s)
-echo -e "End:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH mb/s (`date +%s`)\t(time=$(($END - $START)))s"
+echo -e "End:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH MiB/s\t(time=$(($END - $START)))s"
