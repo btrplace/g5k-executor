@@ -29,6 +29,6 @@ public class Shutdown extends ActionLauncher {
 
     @Override
     public String toString() {
-        return "shutdown.sh(node=" + node.toString() + ")" ;
+        return script + "(node=" + node.toString() + ")" ;
     }
 }
