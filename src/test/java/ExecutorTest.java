@@ -30,4 +30,52 @@ public class ExecutorTest {
         System.err.flush();
         System.out.flush();
     }
+
+    @Test
+    public void intraNodeVanillaFullMemTest() throws IOException {
+
+        G5kExecutor.main(new String[]{
+                "-s", "src/main/bin/scripts_test/",
+                "-i", "src/test/resources/micro_intra_vanilla-realMem.json",
+                "-o", "src/test/resources/micro_intra_vanilla-realMem.csv"
+        });
+        System.err.flush();
+        System.out.flush();
+    }
+
+    @Test
+    public void interNodeVanillaFullMemTest() throws IOException {
+
+        G5kExecutor.main(new String[]{
+                "-s", "src/main/bin/scripts_test/",
+                "-i", "src/test/resources/micro_inter_vanilla-realMem.json",
+                "-o", "src/test/resources/micro_inter_vanilla-realMem.csv"
+        });
+        System.err.flush();
+        System.out.flush();
+    }
+
+    @Test
+    public void intraNodeVanillaRealMemTest() throws IOException {
+
+        G5kExecutor.main(new String[]{
+                "-s", "src/main/bin/scripts_test/",
+                "-i", "src/test/resources/micro_intra_vanilla-fullMem.json",
+                "-o", "src/test/resources/micro_intra_vanilla-fullMem.csv"
+        });
+        System.err.flush();
+        System.out.flush();
+    }
+
+    @Test
+    public void interNodeVanillaRealMemTest() throws IOException {
+
+        G5kExecutor.main(new String[]{
+                "-s", "src/main/bin/scripts_test/",
+                "-i", "src/test/resources/micro_inter_vanilla-fullMem.json",
+                "-o", "src/test/resources/micro_inter_vanilla-fullMem.csv"
+        });
+        System.err.flush();
+        System.out.flush();
+    }
 }
