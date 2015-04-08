@@ -73,7 +73,9 @@ public class PlanMonitor implements ReconfigurationPlanMonitor {
         if (action instanceof MigrateVM) {
             for (Action a : plan.getActions()) {
                 if (a instanceof MigrateVM) {
-                    if (a.getEnd() <= action.getStart()) {
+                    if (a.getEnd() == action.getStart() &&
+                            (((MigrateVM) a).getSourceNode().equals(((MigrateVM) action).getSourceNode()) ||
+                             ((MigrateVM) a).getDestinationNode().equals(((MigrateVM) action).getDestinationNode()))) {
                         actions.add(a);
                     }
                 }
