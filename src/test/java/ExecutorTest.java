@@ -78,4 +78,16 @@ public class ExecutorTest {
         System.err.flush();
         System.out.flush();
     }
+
+    @Test
+    public void soccTest() throws IOException {
+
+        G5kExecutor.main(new String[]{
+                "-s", "src/main/bin/scripts_test/",
+                "-i", "src/test/resources/socc.json",
+                "-o", "src/test/resources/socc.csv"
+        });
+        System.err.flush();
+        System.out.flush();
+    }
 }
