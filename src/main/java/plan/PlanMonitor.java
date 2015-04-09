@@ -5,7 +5,6 @@ import org.btrplace.plan.Dependency;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlanMonitor;
 import org.btrplace.plan.event.Action;
-import org.btrplace.plan.event.MigrateVM;
 
 import java.util.*;
 
@@ -70,17 +69,26 @@ public class PlanMonitor implements ReconfigurationPlanMonitor {
 
         List<Action> actions = new ArrayList<>();
 
+        for (Action a : plan.getActions()) {
+            if (a.getEnd() == action.getStart()) {
+                actions.add(a);
+            }
+        }
+
+        /*
         if (action instanceof MigrateVM) {
             for (Action a : plan.getActions()) {
                 if (a instanceof MigrateVM) {
-                    if (a.getEnd() == action.getStart() &&
-                            (((MigrateVM) a).getSourceNode().equals(((MigrateVM) action).getSourceNode()) ||
-                             ((MigrateVM) a).getDestinationNode().equals(((MigrateVM) action).getDestinationNode()))) {
-                        actions.add(a);
+                    if (a.getEnd() == action.getStart()) {
+                        if (((MigrateVM) a).getSourceNode().equals(((MigrateVM) action).getSourceNode()) ||
+                             ((MigrateVM) a).getDestinationNode().equals(((MigrateVM) action).getDestinationNode()))){
+                            actions.add(a);
+                        }
                     }
                 }
             }
         }
+        */
 
         return actions;
     }
