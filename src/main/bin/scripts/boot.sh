@@ -6,7 +6,7 @@ BMC_MDP="$3"
 NOTIF_DIR="$4"
 
 # Translate name to real
-NODE=`cat translate | grep $NODE | awk '{print $2;}'`
+NODE=`cat translate | grep -P "$NODE\t" | awk '{print $2;}'`
 
 function wait_for_boot {
 	local NODE="$1"

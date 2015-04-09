@@ -3,7 +3,7 @@
 VM_NAME="$1"
 
 # Translate name to real
-VM_NAME=`cat translate | grep $VM_NAME | awk '{print $2;}'`
+VM_NAME=`cat translate | grep -P "$VM_NAME\t" | awk '{print $2;}'`
 
 #TODO: replace VM_NAME by IP
 

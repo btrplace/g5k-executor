@@ -7,9 +7,9 @@ BANDWIDTH="$4"
 VIRSH_OPTS="$5"
 
 # Translate name to real
-VM_NAME=`cat translate | grep $VM_NAME | awk '{print $2;}'`
-NODE_SRC=`cat translate | grep $NODE_SRC | awk '{print $2;}'`
-NODE_DEST=`cat translate | grep $NODE_DEST | awk '{print $2;}'`
+VM_NAME=`cat translate | grep -P "$VM_NAME\t" | awk '{print $2;}'`
+NODE_SRC=`cat translate | grep -P "$NODE_SRC\t" | awk '{print $2;}'`
+NODE_DEST=`cat translate | grep -P "$NODE_DEST\t" | awk '{print $2;}'`
 
 SSH_USER="root"
 SSH_OPTS=' -o StrictHostKeyChecking=no -o BatchMode=yes -o UserKnownHostsFile=/dev/null -o LogLevel=quiet '

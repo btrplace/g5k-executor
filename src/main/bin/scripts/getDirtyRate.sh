@@ -6,8 +6,8 @@ FREQUENCY="$3"
 DURATION="$4"
 
 # Translate name to real
-HOST=`cat translate | grep $HOST | awk '{print $2;}'`
-VM_NAME=`cat translate | grep $VM_NAME | awk '{print $2;}'`
+HOST=`cat translate | grep -P "$HOST\t" | awk '{print $2;}'`
+VM_NAME=`cat translate | grep -P "$VM_NAME\t" | awk '{print $2;}'`
 
 SSH_USER="root"
 SSH_OPTS=' -o StrictHostKeyChecking=no -o BatchMode=yes -o UserKnownHostsFile=/dev/null -o LogLevel=quiet '
