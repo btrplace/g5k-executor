@@ -15,7 +15,9 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import plan.PlanScheduler;
+import plan.MemoryBuddiesScheduler;
+import plan.Scheduler;
+import plan.mVMScheduler;
 
 import java.io.*;
 import java.util.*;
@@ -89,9 +91,11 @@ public class G5kExecutor {
             actionsMap.put(a, createLauncher(a));
         }
 
-        // Schedule all actions
-        PlanScheduler executor = new PlanScheduler(plan, actionsMap, scriptsDir);
-        Map<Action, PlanScheduler.actionDuration> durations = executor.start();
+        // Schedule actions
+        //mVMScheduler executor = new mVMScheduler(plan, actionsMap, scriptsDir);
+        MemoryBuddiesScheduler executor = new MemoryBuddiesScheduler(2, actionsMap, scriptsDir);
+        
+        Map<Action, Scheduler.actionDuration> durations = executor.start();
 
         if (durations == null || durations.isEmpty()) {
             System.err.println("Unable to retrieve effective durations");
@@ -140,7 +144,7 @@ public class G5kExecutor {
         return null;
     }
 
-    private void saveAsCSV(Map<Action, PlanScheduler.actionDuration> durations) {
+    private void saveAsCSV(Map<Action, mVMScheduler.actionDuration> durations) {
 
         List<Action> actions = new ArrayList<>(durations.keySet());
 

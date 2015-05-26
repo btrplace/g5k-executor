@@ -1,6 +1,7 @@
 package action;
 
-import plan.PlanScheduler;
+import plan.Scheduler;
+import plan.mVMScheduler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public abstract class ActionLauncher implements Callable<Date> {
     protected String script;
     protected List<String> params;
     //protected Map<String, String> vars;
-    protected PlanScheduler.Lock lock;
+    protected Scheduler.Lock lock = null;
     private String scriptsDir = null;
 
     //public void execute() {
@@ -62,8 +63,10 @@ public abstract class ActionLauncher implements Callable<Date> {
             // Wait for termination
             p.waitFor();
 
-            synchronized (lock) {
-                lock.notify();
+            if (lock != null) {
+                synchronized (lock) {
+                    lock.notify();
+                }
             }
 
         } catch (Exception e) {
@@ -75,7 +78,7 @@ public abstract class ActionLauncher implements Callable<Date> {
         return new Date();
     }
 
-    public void setSync(PlanScheduler.Lock lock) {
+    public void setSync(mVMScheduler.Lock lock) {
         this.lock = lock;
     }
     

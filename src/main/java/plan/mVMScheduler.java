@@ -13,21 +13,19 @@ import java.util.concurrent.Future;
 /**
  * Created by vkherbac on 18/02/15.
  */
-public class PlanScheduler {
+public class mVMScheduler implements Scheduler {
 
-    public static final class Lock {}
-    private final Object lock = new Lock();
     
     private Map<Action, ActionLauncher> actionsMap;
     private PlanMonitor rpm;
     private String scriptsDir = null;
 
-    public PlanScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap, String scriptsDir) {
+    public mVMScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap, String scriptsDir) {
         this(plan, actionsMap);
         this.scriptsDir = scriptsDir;
     }
     
-    public PlanScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap) {
+    public mVMScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap) {
         this.actionsMap = actionsMap;
         rpm = new PlanMonitor(plan);
     }
@@ -108,14 +106,5 @@ public class PlanScheduler {
         }
         
         return durations;
-    }
-    
-    public class actionDuration {
-        Date start, end;
-        public actionDuration(Date start, Date end) { this.start = start; this.end = end;  }
-        public void setStart(Date start) { this.start = start; }
-        public void setEnd(Date end) { this.end = end; }
-        public Date getStart() { return start; }
-        public Date getEnd() { return end; }
     }
 }
