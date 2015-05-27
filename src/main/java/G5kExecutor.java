@@ -15,9 +15,9 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import plan.MemoryBuddiesScheduler;
 import plan.Scheduler;
-import plan.mVMScheduler;
+import plan.memory_buddies.MemoryBuddiesScheduler;
+import plan.mvm.mVMScheduler;
 
 import java.io.*;
 import java.util.*;
@@ -29,12 +29,18 @@ import java.util.zip.GZIPInputStream;
 public class G5kExecutor {
 
     // Define options list
-    @Option(name = "-s", aliases = "--scripts-dir", usage = "Scripts location relative directory")
-    private String scriptsDir;
+    @Option(required = false, name = "-d", aliases = "--scripts-dir", usage = "Scripts location relative directory")
+    private String scriptsDir = null;
     @Option(required = true, name = "-i", aliases = "--input-json", usage = "The json reconfiguration plan to read (can be a .gz)")
-    private String planFileName;
+    private String planFileName = "";
     @Option(required = true, name = "-o", aliases = "--output-csv", usage = "Print actions durations to this file")
-    private String outputFile;
+    private String outputFile = "";
+    @Option(required = false, name = "-mvm", forbids = {"-buddies", "-p"}, aliases = "--mvm-scheduler", usage = "Select the scheduler of mVM (default choice)")
+    private boolean mvm = false;
+    @Option(required = false, name = "-buddies", forbids = {"-mvm"}, aliases = "--memory-buddies-scheduler", usage = "Select the scheduler of Memory buddies")
+    private boolean buddies = false;
+    @Option(required = false, name = "-p", depends = {"-buddies"}, forbids = {"-mvm"}, hidden = true, aliases = "--parallelism", usage = "Select the parallelism level for the Memory buddies scheduler")
+    private int parallelism = 0;
 
     public static void main(String[] args) throws IOException {
         new G5kExecutor().parseArgs(args);
@@ -49,7 +55,7 @@ public class G5kExecutor {
             cmdParser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println("g5kExecutor [-s scripts_dir] -i json_file -o output_file");
+            System.err.println("g5kExecutor [-d scripts_dir] (-mvm|-buddies -p <x>) -i <json_file> -o <output_file>");
             cmdParser.printUsage(System.err);
             System.err.println();
             System.exit(1);
@@ -92,16 +98,31 @@ public class G5kExecutor {
         }
 
         // Schedule actions
-        //mVMScheduler executor = new mVMScheduler(plan, actionsMap, scriptsDir);
-        MemoryBuddiesScheduler executor = new MemoryBuddiesScheduler(2, actionsMap, scriptsDir);
-        
+        Scheduler executor = null;
+        if (mvm) {
+            executor = new mVMScheduler(actionsMap, plan, scriptsDir);
+        }
+        else if (buddies) {
+            if (parallelism > 0) {
+                executor = new MemoryBuddiesScheduler(actionsMap, parallelism, scriptsDir);
+            }
+            else {
+                System.err.println("Memory buddies scheduler: The parallelism level should be a positive number.");
+                System.exit(1);
+            }
+        }
+        else {
+            // mVM by default
+            executor = new mVMScheduler(actionsMap, plan, scriptsDir);
+        }
         Map<Action, Scheduler.actionDuration> durations = executor.start();
 
         if (durations == null || durations.isEmpty()) {
-            System.err.println("Unable to retrieve effective durations");
+            System.err.println("Unable to retrieve effective durations.");
             System.exit(1);
         }
 
+        // Save the durations to a csv file
         saveAsCSV(durations);
 
         // Exit

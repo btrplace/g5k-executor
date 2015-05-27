@@ -1,10 +1,11 @@
-package plan;
+package plan.memory_buddies;
 
 import action.ActionLauncher;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.BootNode;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.plan.event.ShutdownNode;
+import plan.Scheduler;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -21,12 +22,12 @@ public class MemoryBuddiesScheduler implements Scheduler {
     private String scriptsDir = null;
     private int para;
 
-    public MemoryBuddiesScheduler(int para, Map<Action, ActionLauncher> actionsMap, String scriptsDir) {
-        this(para, actionsMap);
+    public MemoryBuddiesScheduler(Map<Action, ActionLauncher> actionsMap, int para, String scriptsDir) {
+        this(actionsMap, para);
         this.scriptsDir = scriptsDir;
     }
     
-    public MemoryBuddiesScheduler(int para, Map<Action, ActionLauncher> actionsMap) {
+    public MemoryBuddiesScheduler(Map<Action, ActionLauncher> actionsMap, int para) {
         this.para = para;
         
         this.actionsMap = actionsMap;
@@ -121,7 +122,7 @@ public class MemoryBuddiesScheduler implements Scheduler {
         }
 
         
-        // Check for finished actions and prepare the new unlocked actions
+        // Get the date of finished actions
         for (Iterator<Future<Date>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
             Future<Date> f = it.next();
 

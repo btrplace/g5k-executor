@@ -1,4 +1,4 @@
-package plan;
+package plan.mvm;
 
 import org.btrplace.model.Model;
 import org.btrplace.plan.Dependency;

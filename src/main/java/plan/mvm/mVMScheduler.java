@@ -1,8 +1,9 @@
-package plan;
+package plan.mvm;
 
 import action.ActionLauncher;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
+import plan.Scheduler;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -20,12 +21,12 @@ public class mVMScheduler implements Scheduler {
     private PlanMonitor rpm;
     private String scriptsDir = null;
 
-    public mVMScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap, String scriptsDir) {
-        this(plan, actionsMap);
+    public mVMScheduler(Map<Action, ActionLauncher> actionsMap, ReconfigurationPlan plan, String scriptsDir) {
+        this(actionsMap, plan);
         this.scriptsDir = scriptsDir;
     }
     
-    public mVMScheduler(ReconfigurationPlan plan, Map<Action, ActionLauncher> actionsMap) {
+    public mVMScheduler(Map<Action, ActionLauncher> actionsMap, ReconfigurationPlan plan) {
         this.actionsMap = actionsMap;
         rpm = new PlanMonitor(plan);
     }
