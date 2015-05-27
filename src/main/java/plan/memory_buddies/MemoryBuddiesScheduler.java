@@ -43,10 +43,10 @@ public class MemoryBuddiesScheduler implements Scheduler {
         for (Action a : actionsMap.keySet()) if (a instanceof ShutdownNode) shutdownMap.put(a, actionsMap.get(a));
     }
 
-    public Map<Action, actionDuration> start() {
+    public Map<Action, ActionDuration> start() {
 
         Map<Future<Date>, Action> actionStates = new HashMap<>();
-        Map<Action, actionDuration> durations = new HashMap<>();
+        Map<Action, ActionDuration> durations = new HashMap<>();
 
         ExecutorService service = null;
         
@@ -57,7 +57,7 @@ public class MemoryBuddiesScheduler implements Scheduler {
                 ActionLauncher l = bootMap.get(b);
                 if (scriptsDir != null) l.setScriptsDir(scriptsDir);
                 actionStates.put(service.submit(l), b);
-                durations.put(b, new actionDuration(new Date(), null));
+                durations.put(b, new ActionDuration(new Date(), null));
             }
             service.shutdown();
             while (!service.isTerminated()) {
@@ -82,7 +82,7 @@ public class MemoryBuddiesScheduler implements Scheduler {
                 ActionLauncher l = migrationMap.get(m);
                 if (scriptsDir != null) l.setScriptsDir(scriptsDir);
                 actionStates.put(service.submit(l), m);
-                durations.put(m, new actionDuration(new Date(), null));
+                durations.put(m, new ActionDuration(new Date(), null));
             }
             service.shutdown();
             while (!service.isTerminated()) {
@@ -105,7 +105,7 @@ public class MemoryBuddiesScheduler implements Scheduler {
                 ActionLauncher l = shutdownMap.get(s);
                 if (scriptsDir != null) l.setScriptsDir(scriptsDir);
                 actionStates.put(service.submit(l), s);
-                durations.put(s, new actionDuration(new Date(), null));
+                durations.put(s, new ActionDuration(new Date(), null));
             }
             service.shutdown();
             while (!service.isTerminated()) {

@@ -13,11 +13,11 @@ public interface Scheduler {
     public static final class Lock {}
     final Object lock = new Lock();
 
-    public Map<Action, actionDuration> start();
+    public Map<Action, ActionDuration> start();
 
-    public class actionDuration {
+    public class ActionDuration {
         Date start, end;
-        public actionDuration(Date start, Date end) { this.start = start; this.end = end;  }
+        public ActionDuration(Date start, Date end) { this.start = start; this.end = end;  }
         public void setStart(Date start) { this.start = start; }
         public void setEnd(Date end) { this.end = end; }
         public Date getStart() { return start; }

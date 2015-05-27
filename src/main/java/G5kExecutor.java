@@ -115,7 +115,7 @@ public class G5kExecutor {
             // mVM by default
             executor = new mVMScheduler(actionsMap, plan, scriptsDir);
         }
-        Map<Action, Scheduler.actionDuration> durations = executor.start();
+        Map<Action, Scheduler.ActionDuration> durations = executor.start();
 
         if (durations == null || durations.isEmpty()) {
             System.err.println("Unable to retrieve effective durations.");
@@ -165,7 +165,7 @@ public class G5kExecutor {
         return null;
     }
 
-    private void saveAsCSV(Map<Action, mVMScheduler.actionDuration> durations) {
+    private void saveAsCSV(Map<Action, Scheduler.ActionDuration> durations) {
 
         List<Action> actions = new ArrayList<>(durations.keySet());
 

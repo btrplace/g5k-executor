@@ -31,10 +31,10 @@ public class mVMScheduler implements Scheduler {
         rpm = new PlanMonitor(plan);
     }
 
-    public Map<Action, actionDuration> start() {
+    public Map<Action, ActionDuration> start() {
 
         Map<Future<Date>, Action> actionStates = new HashMap<>();
-        Map<Action, actionDuration> durations = new HashMap<>();
+        Map<Action, ActionDuration> durations = new HashMap<>();
 
         // Start actions
         int nbCommitted = 0;
@@ -61,7 +61,7 @@ public class mVMScheduler implements Scheduler {
                     l.setSync((Lock) lock);
                     if (scriptsDir!=null) l.setScriptsDir(scriptsDir);
                     actionStates.put(service.submit(l), a);
-                    durations.put(a, new actionDuration(new Date(), null));
+                    durations.put(a, new ActionDuration(new Date(), null));
                 }
                 service.shutdown();
             }
