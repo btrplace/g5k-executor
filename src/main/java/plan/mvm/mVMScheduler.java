@@ -33,7 +33,7 @@ public class mVMScheduler implements Scheduler {
 
     public Map<Action, ActionDuration> start() {
 
-        Map<Future<Date>, Action> actionStates = new HashMap<>();
+        Map<Future<ActionDuration>, Action> actionStates = new HashMap<>();
         Map<Action, ActionDuration> durations = new HashMap<>();
 
         // Start actions
@@ -77,13 +77,13 @@ public class mVMScheduler implements Scheduler {
             }
 
             // Check for finished actions and prepare the new unlocked actions
-            for (Iterator<Future<Date>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
-                Future<Date> f = it.next();
+            for (Iterator<Future<ActionDuration>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
+                Future<ActionDuration> f = it.next();
 
                 if (f.isDone()) {
                     // Get the returned Date
                     try {
-                        durations.get(actionStates.get(f)).setEnd(f.get());
+                        durations.put(actionStates.get(f), f.get());
                     } catch (InterruptedException e) {
                         System.err.println("Interrupted Exception during action: " +
                                 actionsMap.get((actionStates.get(f))).toString());

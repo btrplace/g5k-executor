@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by vkherbac on 17/02/15.
  */
-public abstract class ActionLauncher implements Callable<Date> {
+public abstract class ActionLauncher implements Callable<Scheduler.ActionDuration> {
 
     private final String DEFAULT_SCRIPTS_DIR = "scripts/";
     
@@ -24,9 +24,10 @@ public abstract class ActionLauncher implements Callable<Date> {
 
     //public void execute() {
     @Override
-    public Date call() {
+    public Scheduler.ActionDuration call() {
 
         Process p = null;
+        Date start = null;
 
         try {
             ProcessBuilder pb;
@@ -57,6 +58,8 @@ public abstract class ActionLauncher implements Callable<Date> {
             pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb.redirectError(ProcessBuilder.Redirect.INHERIT);
 
+            start = new Date();
+            
             // Launch the script
             p = pb.start();
 
@@ -75,7 +78,7 @@ public abstract class ActionLauncher implements Callable<Date> {
         }
 
         //return p.exitValue();
-        return new Date();
+        return new Scheduler.ActionDuration(start, new Date());
     }
 
     public void setSync(mVMScheduler.Lock lock) {

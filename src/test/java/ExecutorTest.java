@@ -25,6 +25,7 @@ public class ExecutorTest {
 
         G5kExecutor.main(new String[]{
                 "-d", "src/main/bin/scripts_test/",
+                "-buddies", "-p", "2",
                 "-i", "src/test/resources/micro_inter-node.json",
                 "-o", "src/test/resources/micro_inter-node.csv"
         });

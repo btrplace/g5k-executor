@@ -45,7 +45,7 @@ public class MemoryBuddiesScheduler implements Scheduler {
 
     public Map<Action, ActionDuration> start() {
 
-        Map<Future<Date>, Action> actionStates = new HashMap<>();
+        Map<Future<ActionDuration>, Action> actionStates = new HashMap<>();
         Map<Action, ActionDuration> durations = new HashMap<>();
 
         ExecutorService service = null;
@@ -57,7 +57,6 @@ public class MemoryBuddiesScheduler implements Scheduler {
                 ActionLauncher l = bootMap.get(b);
                 if (scriptsDir != null) l.setScriptsDir(scriptsDir);
                 actionStates.put(service.submit(l), b);
-                durations.put(b, new ActionDuration(new Date(), null));
             }
             service.shutdown();
             while (!service.isTerminated()) {
@@ -76,13 +75,12 @@ public class MemoryBuddiesScheduler implements Scheduler {
         // Schedule all migrations
         if (!migrationMap.isEmpty()) {
             List<Action> migrations = new ArrayList<Action>(migrationMap.keySet());
-            Collections.shuffle(migrations);
+            Collections.shuffle(migrations); // Select the migrations randomly
             service = Executors.newFixedThreadPool(para);
             for (Action m : migrations) {
                 ActionLauncher l = migrationMap.get(m);
                 if (scriptsDir != null) l.setScriptsDir(scriptsDir);
                 actionStates.put(service.submit(l), m);
-                durations.put(m, new ActionDuration(new Date(), null));
             }
             service.shutdown();
             while (!service.isTerminated()) {
@@ -105,7 +103,6 @@ public class MemoryBuddiesScheduler implements Scheduler {
                 ActionLauncher l = shutdownMap.get(s);
                 if (scriptsDir != null) l.setScriptsDir(scriptsDir);
                 actionStates.put(service.submit(l), s);
-                durations.put(s, new ActionDuration(new Date(), null));
             }
             service.shutdown();
             while (!service.isTerminated()) {
@@ -123,13 +120,13 @@ public class MemoryBuddiesScheduler implements Scheduler {
 
         
         // Get the date of finished actions
-        for (Iterator<Future<Date>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
-            Future<Date> f = it.next();
+        for (Iterator<Future<ActionDuration>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
+            Future<ActionDuration> f = it.next();
 
             if (f.isDone()) {
                 // Get the returned Date
                 try {
-                    durations.get(actionStates.get(f)).setEnd(f.get());
+                    durations.put(actionStates.get(f), f.get());
                 } catch (InterruptedException e) {
                     System.err.println("Interrupted Exception during action: " +
                             actionsMap.get((actionStates.get(f))).toString());
