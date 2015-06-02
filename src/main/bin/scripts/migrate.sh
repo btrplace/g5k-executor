@@ -20,11 +20,11 @@ VM_BASE_IMG_NAME=$(basename $VM_BASE_IMG)
 VM_BASE_IMG_DIR="/data/nfs/base_img"
 VM_BACKING_IMG_DIR="/data/nfs/backing"
 
-START=$(date +%s)
-echo -e "Start:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH Mbps"
-
 # Convert Mb/s to MiB/s and round
-BANDWIDTH=`bc <<< "$BANDWIDTH/8.388608"`
+BANDWIDTH_OCTET=`bc <<< "$BANDWIDTH/8.388608"`
+
+START=$(date +%s)
+echo -e "Start:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH Mbps ($BANDWIDTH_OCTET MiB/s)"
 
 if [ -n "$VM_BACKING_IMG_DIR" ]; then
         SRC_IMG="$VM_BASE_IMG_DIR/$VM_BASE_IMG_NAME"
@@ -54,7 +54,7 @@ else
 fi
 
 # Set bandwidth
-virsh --connect qemu+tcp://$NODE_SRC/system migrate-setspeed $VM_NAME $BANDWIDTH
+virsh --connect qemu+tcp://$NODE_SRC/system migrate-setspeed $VM_NAME --bandwidth $BANDWIDTH
 
 # Do the migration
 virsh --connect qemu+tcp://$NODE_SRC/system migrate $VIRSH_OPTS $VM_NAME qemu+tcp://$NODE_DEST/system
@@ -73,4 +73,4 @@ else
 fi
 
 END=$(date +%s)
-echo -e "End:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH MiB/s\t(time=$(($END - $START)))s"
+echo -e "End:\tMigrate $VM_NAME from $NODE_SRC to $NODE_DEST at $BANDWIDTH Mbps ($BANDWIDTH_OCTET MiB/s)\t(time=$(($END - $START)))s"
