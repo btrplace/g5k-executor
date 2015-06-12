@@ -8,6 +8,19 @@ import java.io.IOException;
 public class ExecutorTest {
 
     @Test
+    public void randomTest() throws IOException {
+
+        G5kExecutor.main(new String[]{
+                "-d", "src/main/bin/scripts_test/",
+                "-buddies", "-p", "2", "-f",
+                "-i", "src/test/resources/random/micro_random.23.json",
+                "-o", "src/test/resources/random/micro_random.23.csv"
+        });
+        System.err.flush();
+        System.out.flush();
+    }
+
+    @Test
     public void intraNodeTest() throws IOException {
 
         G5kExecutor.main(new String[]{

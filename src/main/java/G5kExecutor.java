@@ -41,6 +41,8 @@ public class G5kExecutor {
     private boolean buddies = false;
     @Option(required = false, name = "-p", depends = {"-buddies"}, forbids = {"-mvm"}, hidden = true, aliases = "--parallelism", usage = "Select the parallelism level for the Memory buddies scheduler")
     private int parallelism = 0;
+    @Option(required = false, name = "-f", depends = {"-buddies"}, forbids = {"-mvm"}, hidden = true, aliases = "--fixed-order", usage = "Do not randomize migrations list (for reproducible experiments)")
+    private boolean fixedOrder = false;
 
     public static void main(String[] args) throws IOException {
         new G5kExecutor().parseArgs(args);
@@ -104,7 +106,7 @@ public class G5kExecutor {
         }
         else if (buddies) {
             if (parallelism > 0) {
-                executor = new MemoryBuddiesScheduler(actionsMap, parallelism, scriptsDir);
+                executor = new MemoryBuddiesScheduler(actionsMap, parallelism, fixedOrder, scriptsDir);
             }
             else {
                 System.err.println("Memory buddies scheduler: The parallelism level should be a positive number.");

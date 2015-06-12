@@ -20,16 +20,17 @@ public class MemoryBuddiesScheduler implements Scheduler {
     
     private Map<Action, ActionLauncher> actionsMap, bootMap, shutdownMap, migrationMap;
     private String scriptsDir = null;
-    private int para;
+    private int para = 0;
+    private boolean fixedOrder = false;
 
-    public MemoryBuddiesScheduler(Map<Action, ActionLauncher> actionsMap, int para, String scriptsDir) {
-        this(actionsMap, para);
+    public MemoryBuddiesScheduler(Map<Action, ActionLauncher> actionsMap, int para, boolean fixedOrder, String scriptsDir) {
+        this(actionsMap, para, fixedOrder);
         this.scriptsDir = scriptsDir;
     }
     
-    public MemoryBuddiesScheduler(Map<Action, ActionLauncher> actionsMap, int para) {
+    public MemoryBuddiesScheduler(Map<Action, ActionLauncher> actionsMap, int para, boolean fixedOrder) {
         this.para = para;
-        
+        this.fixedOrder = fixedOrder;
         this.actionsMap = actionsMap;
         
         // Create a map with migrations only
@@ -75,7 +76,10 @@ public class MemoryBuddiesScheduler implements Scheduler {
         // Schedule all migrations
         if (!migrationMap.isEmpty()) {
             List<Action> migrations = new ArrayList<Action>(migrationMap.keySet());
-            Collections.shuffle(migrations); // Select the migrations randomly
+
+            // Select the migrations randomly
+            if (!fixedOrder) { Collections.shuffle(migrations); }
+            
             service = Executors.newFixedThreadPool(para);
             for (Action m : migrations) {
                 ActionLauncher l = migrationMap.get(m);
@@ -117,7 +121,6 @@ public class MemoryBuddiesScheduler implements Scheduler {
                 }
             }
         }
-
         
         // Get the date of finished actions
         for (Iterator<Future<ActionDuration>> it = actionStates.keySet().iterator(); it.hasNext(); ) {
