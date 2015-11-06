@@ -12,9 +12,10 @@ public class ExecutorTest {
 
         G5kExecutor.main(new String[]{
                 "-d", "src/main/bin/scripts_test/",
-                "-buddies", "-p", "2", "-f",
-                "-i", "src/test/resources/random/micro_random.23.json",
-                "-o", "src/test/resources/random/micro_random.23.csv"
+                //"-buddies", "-p", "2", "-f",
+                "-mvm",
+                "-i", "src/test/resources/random/micro_random.18.json",
+                "-o", "src/test/resources/random/micro_random.18.csv"
         });
         System.err.flush();
         System.out.flush();

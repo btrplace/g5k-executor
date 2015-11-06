@@ -17,6 +17,7 @@ public class Migrate extends ActionLauncher {
 
     public Migrate(VM vm, Node srcNode, Node dstNode, int bw) {
 
+        this.vm = vm;
         this.srcNode = srcNode;
         this.dstNode = dstNode;
         this.bw = bw;
