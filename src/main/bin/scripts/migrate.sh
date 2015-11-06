@@ -59,6 +59,10 @@ virsh --connect qemu+tcp://$NODE_SRC/system migrate-setspeed $VM_NAME --bandwidt
 # Do the migration
 virsh --connect qemu+tcp://$NODE_SRC/system migrate $VIRSH_OPTS $VM_NAME qemu+tcp://$NODE_DEST/system
 
+# Ensure libvirt is not crashed
+ssh $SSH_USER@$NODE_DEST $SSH_OPTS "sudo /etc/init.d/libvirt-bin start"
+ssh $SSH_USER@$NODE_SRC $SSH_OPTS "sudo /etc/init.d/libvirt-bin start"
+
 # Delete base img/backing img from source node
 if [ -n "$VM_BACKING_IMG_DIR" ]; then
         # If backing img is not on shared storage
