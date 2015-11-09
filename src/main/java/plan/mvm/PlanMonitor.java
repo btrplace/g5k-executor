@@ -70,7 +70,7 @@ public class PlanMonitor implements ReconfigurationPlanMonitor {
         List<Action> actions = new ArrayList<>();
 
         for (Action a : plan.getActions()) {
-            if (a.getEnd() == action.getStart()) {
+            if (a.getEnd() <= action.getStart()) {
                 actions.add(a);
             }
         }
