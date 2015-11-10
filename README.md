@@ -1,6 +1,6 @@
-# g5k-executor
+# Grid'5000 executor
 
-This repository contains the source code of the BtrPlace g5k executor. It allows to execute [BtrPlace JSON converted plans](https://github.com/btrplace/scheduler/wiki/JSON-Messages#json-format-of-a-reconfigurationplan) into [Grid'5000 infrastructure](https://www.grid5000.fr/mediawiki/index.php/Grid5000:Home).
+This repository contains the source code of the BtrPlace g5k-executor. It allows to execute [BtrPlace JSON converted plans](https://github.com/btrplace/scheduler/wiki/JSON-Messages#json-format-of-a-reconfigurationplan) into [Grid'5000 infrastructure](https://www.grid5000.fr/mediawiki/index.php/Grid5000:Home).
 
 For a full example, have a look at [this repository](https://github.com/btrplace/migrations-UCC-15) that contains all the informations to reproduce the experiments from the paper "Scheduling Live-Migrations for Fast, Adaptable and Energy Efficient Relocation Operation" published at UCC'15. 
 
