@@ -10,7 +10,7 @@ Requirements:
 
 ## Get the latest version
 
-First, get the laster version (`master` branch) and compile it using `maven`:
+First, get the latest version (`master` branch) and compile it using `maven`:
 
 ``` shell
 # Get it and compile it
