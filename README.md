@@ -29,7 +29,7 @@ cd g5k-1.0-SNAPSHOT/
 ./g5kExecutor
 ```
  
- ## Usage
+## Usage
   
 You first need to edit the migration script `g5k-1.0-SNAPSHOT/scripts/migrate.sh` and modify at least the variable `VM_BASE_IMG` to match your VM image location.
 
@@ -44,7 +44,7 @@ griffon-61 node#1
 ...
 ```
  
- ### Cmdline options
+### Cmdline options
  
 ``` txt
 g5kExecutor [-d scripts_dir] (-mvm|-buddies -p <x>) -i <json_file> -o <output_file>
@@ -57,15 +57,18 @@ g5kExecutor [-d scripts_dir] (-mvm|-buddies -p <x>) -i <json_file> -o <output_fi
  -o (--output-csv) VAL                 : Print actions durations to this file
  ```
  
- ### Usage examples
+### Usage examples
 
+Execute a BtrPlace recnofiguration plan using the `mVM` scheduler:
  
  ``` shell
  ./g5kExecutor --mvm-scheduler --input-json <JSON_FILE> --output-csv <OUTPUT_CSV>
 ```
 
+Execute it using the [Memory Buddies](http://dl.acm.org/citation.cfm?id=1508299) scheduler, with a parallelism set to 2:
+
 ``` shell
-./g5kExecutor --memory-buddies-scheduler --parallelism 2 --fixed-order -i <JSON_FILE> -o <OUTPUT_CSV>
+./g5kExecutor --memory-buddies-scheduler --parallelism 2 -i <JSON_FILE> -o <OUTPUT_CSV>
 ```
 
 The `<OUTPUT_CSV>` file contains 3 fields: `ACTION;START;END` where `ACTION` represents the BtrPlace String representation of the action, `START` and `END` correspond respectively to the start and end time of the action in the form of timestamps.
