@@ -2,7 +2,7 @@
 
 This repository contains the source code of the BtrPlace g5k-executor. It allows to execute [BtrPlace JSON converted plans](https://github.com/btrplace/scheduler/wiki/JSON-Messages#json-format-of-a-reconfigurationplan) into [Grid'5000 infrastructure](https://www.grid5000.fr/mediawiki/index.php/Grid5000:Home).
 
-For a full example, have a look at [this repository](https://github.com/btrplace/migrations-UCC-15) that contains all the informations to reproduce the experiments from the paper "Scheduling Live-Migrations for Fast, Adaptable and Energy Efficient Relocation Operation" published at [UCC'15](http://cyprusconferences.org/ucc2015). 
+For a full usage example, have a look at [this repository](https://github.com/btrplace/migrations-UCC-15) that contains all the informations to reproduce the experiments from the paper "Scheduling Live-Migrations for Fast, Adaptable and Energy Efficient Relocation Operation" published at [UCC'15](http://cyprusconferences.org/ucc2015). 
 
 Requirements:
 * JDK 8+
@@ -31,9 +31,9 @@ cd g5k-1.0-SNAPSHOT/
  
 ## Usage
   
-You first need to edit the migration script `g5k-1.0-SNAPSHOT/scripts/migrate.sh` and modify at least the variable `VM_BASE_IMG` to match your VM image location.
+Il fou are using some g5k shared storage, you first need to edit the migration script `g5k-1.0-SNAPSHOT/scripts/migrate.sh` and modify the variable `VM_BASE_IMG` to match your VM image location.
 
-Then, the `g5k-1.0-SNAPSHOT/scripts/translate` file must be modified to allow to translate VMs and g5k nodes names into the BtrPlace internal VMs and nodes names, the file should look like this:
+Then, the `g5k-1.0-SNAPSHOT/scripts/translate` file must be modified to allow to translate VMs and g5k nodes names into the BtrPlace VMs and nodes names, the file should look like this:
 
 ``` txt
 vm-1 vm#0
@@ -43,6 +43,8 @@ griffon-60 node#0
 griffon-61 node#1
 ...
 ```
+
+Each entry must contains first the real node/VM name and then the corresponding BtrPlace name **separated by a tabulation. The BtrPlace numbering is defined incrementally according to the node/VM creation order (so be sure to create Nodes and VMs objects in the desired order).
  
 ### Cmdline options
  
@@ -59,7 +61,7 @@ g5kExecutor [-d scripts_dir] (-mvm|-buddies -p <x>) -i <json_file> -o <output_fi
  
 ### Usage examples
 
-Execute a BtrPlace recnofiguration plan using the `mVM` scheduler:
+Execute a BtrPlace reconfiguration plan using the `mVM` scheduler:
  
  ``` shell
  ./g5kExecutor --mvm-scheduler --input-json <JSON_FILE> --output-csv <OUTPUT_CSV>
